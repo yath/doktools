@@ -1,0 +1,8 @@
+#!/bin/sh
+set -e
+infile="$1"
+outfile="$2"
+pdftk "$infile" dump_data output "$infile".meta.txt
+pdftk "$outfile" update_info "$infile".meta.txt output "$outfile".new.pdf
+rm "$infile".meta.txt
+mv "$outfile".new.pdf "$outfile"

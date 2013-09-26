@@ -1,0 +1,16 @@
+#!/bin/sh
+C="-c /home/yath/dokumente/recollconf"
+RECOLL="recoll"
+if [ "$1" = "-i" ]; then
+    shift
+    RECOLL="recollindex"
+fi
+
+if [ x"$1" = x"-" ]; then
+    shift
+    exec $RECOLL $C "$@"
+elif [ "$1" ]; then
+    exec $RECOLL $C -q "$1"
+else
+    exec $RECOLL $C
+fi

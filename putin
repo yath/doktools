@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+for infile in "$@"; do
+    dir="$(dirname "$infile")"
+    file="$(basename "$infile")"
+
+    cp "$infile" "$infile".orig.pdf
+    mv "$infile" "$dir/ocrin/$file"
+    touch "$dir/ocrin/$file"
+done

@@ -1,0 +1,5 @@
+#!/bin/sh
+set -e
+in="$1"
+date="$(pdfinfo "$in"|perl -ne '/^CreationDate:\s+(.*)/ && print $1')"
+touch -d "$date" "$in"

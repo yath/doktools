@@ -1,0 +1,3 @@
+#!/bin/sh
+rm -v ocrin/*.pdf
+rm -v ocrout/*

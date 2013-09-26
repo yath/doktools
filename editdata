@@ -1,0 +1,9 @@
+#!/bin/sh
+set -e
+file="$1"
+pdftk "$file" dump_data_utf8 output "$file".meta.txt
+vim "$file".meta.txt
+pdftk "$file" update_info_utf8 "$file".meta.txt output "$file".new.pdf
+rm "$file".meta.txt
+mv "$file".new.pdf "$file"
+./setmtime "$file"

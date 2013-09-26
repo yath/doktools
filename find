@@ -1,0 +1,36 @@
+#!/usr/bin/perl
+use warnings;
+#use 5.12.0;
+
+use Term::ANSIColor qw(:constants);
+use open qw{:encoding(UTF-8) :std};
+use Encode qw(encode decode);
+
+my $vim = 0;
+if (@ARGV && $ARGV[0] eq "-v") {
+    shift @ARGV;
+    $vim = 1;
+}
+die "Usage: $0 [-v] patterns...\n" unless @ARGV;
+
+if (grep /\P{ASCII}/, @ARGV) {
+    @ARGV = map { decode("UTF-8", $_) } @ARGV;
+}
+
+my @patterns = map { qr/\Q$_\E/i } @ARGV;
+
+my ($cstart, $cend) = (!$vim && -t STDOUT) ? (BOLD.RED, RESET) : ("", "");
+
+if ($vim) {
+    open(my $vimfh, "|-", "vim", "+:set ic hls", "+/".
+        join("\\|", @ARGV), "+:1", "-") or die "Unable to spawn vim: $!\n";
+    select $vimfh;
+}
+
+open(my $in, "index.txt") or die "Unable to open index: $!\n"; 
+LINE: while (my $line = <$in>) {
+    foreach (@patterns) {
+        next LINE unless $line =~ s/$_/$cstart$&$cend/g;
+    }
+    print $line;
+}

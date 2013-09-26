@@ -1,0 +1,24 @@
+#!/bin/sh
+set -e
+pages() {
+    pdfinfo "$1" | awk '/Pages:/ { print $2; exit }'
+}
+
+rc=0
+for infile in "$@"; do
+    dir="$(dirname "$infile")"
+    topdir=$(dirname "$dir")
+    file="$(basename "$infile")"
+
+    if [ "$(pages "$infile")" -ne "$(pages "$topdir/$file.orig.pdf")" ]; then
+        echo "*** $infile has different page size than $topdir/$file.orig.pdf, skipping" >&2
+        rc=1
+    else
+        mv "$infile" "$topdir/$file"
+        "$topdir"/copymd "$topdir/$file.orig.pdf" "$topdir/$file"
+        rm -v "$topdir/$file.orig.pdf"
+        "$topdir"/setmtime "$topdir/$file"
+    fi
+done
+
+exit $rc
